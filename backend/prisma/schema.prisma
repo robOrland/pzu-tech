@@ -12,6 +12,24 @@ enum TicketStatus {
   RESOLVIDO
 }
 
+enum Role {
+  ADMIN
+  CITIZEN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(CITIZEN)
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
 model Ticket {
   id          String       @id @default(uuid())
   category    String
@@ -21,6 +39,9 @@ model Ticket {
   status      TicketStatus @default(PENDENTE)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
 
   @@map("tickets")
 }
