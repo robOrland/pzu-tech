@@ -82,6 +82,19 @@ const app = new Elysia()
       })
     })
 
+    // Rota para o cidadão logado ver seus próprios tickets
+    .get('/', async ({ user, set }) => {
+      try {
+        const tickets = await prisma.ticket.findMany({
+          where: { userId: user.id as string },
+          orderBy: { createdAt: 'desc' }
+        });
+        return { success: true, data: tickets };
+      } catch (error) {
+        set.status = 500;
+        return { success: false, message: 'Erro ao buscar chamados' };
+      }
+    })
     // Rota para consultar status pelo protocolo (Pública ou Protegida? Vamos manter pública por id, ou protegida se quiser ver MEUS tickets. Mantendo pública por enquanto pela simplicidade do id)
     .get('/:id', async ({ params, set }) => {
       try {
@@ -160,6 +173,18 @@ const app = new Elysia()
         body: t.Object({
             status: t.Enum({ PENDENTE: 'PENDENTE', EM_ANALISE: 'EM_ANALISE', RESOLVIDO: 'RESOLVIDO' })
         })
+    })
+    // Listar todos os tickets
+    .get('/tickets', async ({ set }) => {
+        try {
+            const tickets = await prisma.ticket.findMany({
+                orderBy: { createdAt: 'desc' }
+            });
+            return { success: true, data: tickets };
+        } catch (error) {
+            set.status = 500;
+            return { success: false, message: 'Erro ao buscar todos os chamados' };
+        }
     })
   )
   .listen(3003);
