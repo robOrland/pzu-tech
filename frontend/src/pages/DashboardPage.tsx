@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import { PlusCircle, Loader2, MapPin, Calendar, Activity, LogOut } from "lucide-react";
 
 interface Ticket {
@@ -27,12 +27,13 @@ const DashboardPage = () => {
 
   const fetchTickets = async () => {
     try {
-      const response = await axios.get("/api/tickets");
+      const response = await api.get("/tickets");
       if (response.data.success) {
         setTickets(response.data.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching tickets:", error);
+      // Opcional: mostrar mensagem de erro ao usuário
     } finally {
       setIsLoading(false);
     }

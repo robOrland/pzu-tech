@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import axios from "axios";
+import api from "@/lib/api";
 import { ArrowLeft } from "lucide-react";
 
 const ReportFormPage = () => {
@@ -19,24 +19,34 @@ const ReportFormPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!category || !description || !address) {
-      alert("Please fill in all fields.");
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+    
+    if (description.length < 10) {
+      alert("A descrição deve ter pelo menos 10 caracteres.");
+      return;
+    }
+    
+    if (address.length < 5) {
+      alert("O endereço deve ter pelo menos 5 caracteres.");
       return;
     }
     
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/tickets", {
+      const response = await api.post("/tickets", {
         category,
         description,
         address,
       });
       if (response.data.success) {
-        alert("Report submitted successfully!");
+        alert("Chamado registrado com sucesso! Protocolo: " + response.data.protocol);
         navigate("/dashboard");
       }
-    } catch (error) {
-      console.error(error);
-      alert("Failed to submit report. Please try again.");
+    } catch (error: any) {
+      const message = error?.message || "Erro ao registrar chamado. Tente novamente.";
+      alert(message);
     } finally {
       setIsLoading(false);
     }

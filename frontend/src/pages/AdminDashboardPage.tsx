@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
@@ -25,12 +25,13 @@ const AdminDashboardPage: React.FC = () => {
 
   const fetchTickets = async () => {
     try {
-      const response = await axios.get('/api/admin/tickets');
+      const response = await api.get('/admin/tickets');
       if (response.data.success) {
         setTickets(response.data.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao buscar tickets:', error);
+      alert(error?.message || 'Erro ao carregar chamados');
     }
   };
 
@@ -40,14 +41,14 @@ const AdminDashboardPage: React.FC = () => {
 
   const handleStatusChange = async (ticketId: string, newStatus: string) => {
     try {
-      await axios.patch(`/api/admin/tickets/${ticketId}/status`, {
+      await api.patch(`/admin/tickets/${ticketId}/status`, {
         status: newStatus
       });
       // Atualiza a lista localmente para refletir a mudança
       setTickets(tickets.map(t => t.id === ticketId ? { ...t, status: newStatus as any } : t));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao atualizar status:', error);
-      alert('Erro ao atualizar status');
+      alert(error?.message || 'Erro ao atualizar status');
     }
   };
 

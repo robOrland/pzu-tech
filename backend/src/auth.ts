@@ -1,12 +1,13 @@
 import { Elysia, t } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import prisma from "./db";
+import { env } from "./config/env";
 
 export const auth = new Elysia()
   .use(
     jwt({
       name: "jwt",
-      secret: process.env.JWT_SECRET || "segredo-super-secreto-mudeme-em-producao",
+      secret: env.JWT_SECRET,
     })
   )
   .group("/auth", (app) =>

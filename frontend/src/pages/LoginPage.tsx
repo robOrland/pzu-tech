@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import axios from "axios";
+import api from "@/lib/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/auth/login", {
+      const response = await api.post("/auth/login", {
         email,
         password,
       });
@@ -30,8 +30,9 @@ const LoginPage = () => {
           navigate("/dashboard");
         }
       }
-    } catch (error) {
-      alert("Login failed. Please check your credentials.");
+    } catch (error: any) {
+      const message = error?.message || "Erro ao fazer login. Verifique suas credenciais.";
+      alert(message);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,22 @@
 {
+  "name": "govtech-backend",
+  "version": "1.0.0",
+  "description": "Backend API para gestão de chamados de infraestrutura urbana",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "start": "bun run index.ts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "bun run add-admin.ts"
+  },
   "dependencies": {
+    "@elysiajs/cors": "^1.1.1",
     "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/swagger": "^1.3.1",
     "@prisma/adapter-pg": "^7.2.0",
@@ -12,11 +29,10 @@
     "@types/bun": "^1.3.5",
     "prisma": "^7.2.0"
   },
-  "name": "govtech",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
   }
 }

@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ReportFormPage from "./pages/ReportFormPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -15,8 +16,23 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/report" element={<ReportFormPage />} />
+          {/* Rotas protegidas (requerem autenticação) */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <ProtectedRoute>
+                <ReportFormPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Rotas de Admin Protegidas */}
           <Route element={<AdminRoute />}>

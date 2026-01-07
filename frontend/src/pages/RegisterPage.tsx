@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
+import api from "@/lib/api";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -15,19 +15,31 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação básica
+    if (name.length < 3) {
+      alert("Nome deve ter pelo menos 3 caracteres");
+      return;
+    }
+    if (password.length < 6) {
+      alert("Senha deve ter pelo menos 6 caracteres");
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/auth/register", {
+      const response = await api.post("/auth/register", {
         name,
         email,
         password,
       });
       if (response.data.success) {
-        alert("Registration successful! Please login.");
+        alert("Cadastro realizado com sucesso! Faça login para continuar.");
         navigate("/");
       }
-    } catch (error) {
-      alert("Registration failed. Please try again.");
+    } catch (error: any) {
+      const message = error?.message || "Erro ao realizar cadastro. Tente novamente.";
+      alert(message);
     } finally {
       setIsLoading(false);
     }

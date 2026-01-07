@@ -1,9 +1,13 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 
-const AdminRoute: React.FC = () => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -18,11 +22,7 @@ const AdminRoute: React.FC = () => {
     return <Navigate to="/" replace />;
   }
 
-  if (user.role !== 'ADMIN') {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <Outlet />;
+  return <>{children}</>;
 };
 
-export default AdminRoute;
+export default ProtectedRoute;
