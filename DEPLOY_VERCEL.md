@@ -97,6 +97,20 @@ Crie `vercel.json` na raiz do projeto:
     "VITE_API_URL": "@vite_api_url"
   }
 }
+
+## ❓ Resolução de Problemas
+
+### Erro: "Git author ... must have access to the team ..."
+
+Este erro ocorre quando você tenta fazer push para o GitHub mas o autor do commit não faz parte do time no Vercel que é dono do projeto.
+
+**Soluções:**
+1. **Convite:** Peça ao administrador do time `roborland` no Vercel para convidar seu email (`orlando.rosa@estudantes.ifg.edu.br`) como membro.
+2. **Deploy via CLI:** Use a CLI do Vercel localmente para fazer deploy manual:
+   ```bash
+   vercel --prod
+   ```
+3. **Mudar Dono:** Se o projeto for pessoal, desconecte-o do time no Vercel e conecte à sua conta pessoal.
 ```
 
 Ou configure diretamente no dashboard do Vercel.

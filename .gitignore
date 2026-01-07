@@ -71,3 +71,6 @@ temp/
 
 # TypeScript
 *.tsbuildinfo
+
+.vercel
+.env*.local
