@@ -24,7 +24,11 @@ const LoginPage = () => {
       });
       if (response.data.success) {
         login(response.data.token, response.data.user);
-        navigate("/dashboard");
+        if (response.data.user.role === 'ADMIN') {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       alert("Login failed. Please check your credentials.");

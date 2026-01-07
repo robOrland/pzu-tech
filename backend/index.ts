@@ -95,7 +95,7 @@ const app = new Elysia()
         return { success: false, message: 'Erro ao buscar chamados' };
       }
     })
-    // Rota para consultar status pelo protocolo (Pública ou Protegida? Vamos manter pública por id, ou protegida se quiser ver MEUS tickets. Mantendo pública por enquanto pela simplicidade do id)
+    // Rota para consultar status pelo protocolo (Pública)
     .get('/:id', async ({ params, set }) => {
       try {
         const ticket = await prisma.ticket.findUnique({
@@ -104,38 +104,16 @@ const app = new Elysia()
 
         if (!ticket) {
           set.status = 404
-          return {
-            success: false,
-            message: 'Protocolo não encontrado'
-          }
+          return { success: false, message: 'Chamado não encontrado' }
         }
 
-        return {
-          success: true,
-          data: {
-            id: ticket.id,
-            status: ticket.status,
-            category: ticket.category,
-            description: ticket.description,
-            address: ticket.address,
-            createdAt: ticket.createdAt
-          }
-        }
+        return { success: true, data: ticket }
       } catch (error) {
-        console.error(error)
         set.status = 500
-        return {
-          success: false,
-          message: 'Erro ao consultar protocolo'
-        }
+        return { success: false, message: 'Erro ao buscar chamado' }
       }
-    }, {
-      params: t.Object({
-        id: t.String({ format: 'uuid', description: 'Número do protocolo (UUID)' })
-      })
     })
   )
-  // Área Administrativa
   .group('/admin', (app) => app
     .derive(async ({ jwt, headers, set }) => {
       const authHeader = headers['authorization']
@@ -143,51 +121,70 @@ const app = new Elysia()
         set.status = 401
         throw new Error('Não autorizado')
       }
+      
       const token = authHeader.split(' ')[1]
       const payload = await jwt.verify(token)
+      
       if (!payload) {
         set.status = 401
         throw new Error('Token inválido')
       }
-      // Verifica se é ADMIN
+
       if (payload.role !== 'ADMIN') {
         set.status = 403
         throw new Error('Acesso negado: Apenas administradores')
       }
-      return { user: payload }
+      
+      return {
+        user: payload
+      }
     })
-    
-    // Atualizar Status do Ticket
-    .patch('/tickets/:id/status', async ({ params, body, set }) => {
-        try {
-            const ticket = await prisma.ticket.update({
-                where: { id: params.id },
-                data: { status: body.status }
-            })
-            return { success: true, message: 'Status atualizado', data: ticket }
-        } catch (error) {
-            set.status = 500
-            return { success: false, message: 'Erro ao atualizar status' }
-        }
-    }, {
-        body: t.Object({
-            status: t.Enum({ PENDENTE: 'PENDENTE', EM_ANALISE: 'EM_ANALISE', RESOLVIDO: 'RESOLVIDO' })
-        })
-    })
-    // Listar todos os tickets
+    // Listar todos os chamados
     .get('/tickets', async ({ set }) => {
-        try {
-            const tickets = await prisma.ticket.findMany({
-                orderBy: { createdAt: 'desc' }
-            });
-            return { success: true, data: tickets };
-        } catch (error) {
-            set.status = 500;
-            return { success: false, message: 'Erro ao buscar todos os chamados' };
-        }
+      try {
+        const tickets = await prisma.ticket.findMany({
+          orderBy: { createdAt: 'desc' },
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
+          }
+        })
+        return { success: true, data: tickets }
+      } catch (error) {
+        console.error(error)
+        set.status = 500
+        return { success: false, message: 'Erro ao listar chamados' }
+      }
+    })
+    // Atualizar status do chamado
+    .patch('/tickets/:id/status', async ({ params, body, set }) => {
+      try {
+        const { status } = body
+        const ticket = await prisma.ticket.update({
+          where: { id: params.id },
+          data: { status }
+        })
+        return { success: true, message: 'Status atualizado com sucesso', data: ticket }
+      } catch (error) {
+        console.error(error)
+        set.status = 500
+        return { success: false, message: 'Erro ao atualizar status' }
+      }
+    }, {
+      body: t.Object({
+        status: t.Enum({
+          PENDENTE: 'PENDENTE',
+          EM_ANALISE: 'EM_ANALISE',
+          RESOLVIDO: 'RESOLVIDO'
+        })
+      })
     })
   )
-  .listen(3003);
+  .listen(3000);
 
 console.log(
   `🦊 GovTech API is running at ${app.server?.hostname}:${app.server?.port}`
