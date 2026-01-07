@@ -8,10 +8,12 @@ Sistema completo para gestão de chamados de infraestrutura urbana, permitindo q
 - [Tecnologias](#-tecnologias)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação](#-instalação)
+- [🐳 Instalação com Docker](#-instalação-com-docker)
 - [Configuração](#-configuração)
 - [Uso](#-uso)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [API](#-api)
+- [🚀 Deploy](#-deploy)
 - [Contribuindo](#-contribuindo)
 - [Licença](#-licença)
 
@@ -101,6 +103,47 @@ npm install
 cp .env.example .env
 # Edite o arquivo .env se necessário
 ```
+
+## 🐳 Instalação com Docker
+
+Para uma instalação rápida usando Docker, siga os passos abaixo:
+
+### Pré-requisitos
+- [Docker](https://www.docker.com/get-started) instalado
+- [Docker Compose](https://docs.docker.com/compose/install/) instalado
+
+### Passos
+
+1. **Configure as variáveis de ambiente:**
+```bash
+cp docker-compose.env.example .env
+# Edite o arquivo .env conforme necessário
+```
+
+2. **Inicie todos os serviços:**
+```bash
+docker-compose up -d
+```
+
+3. **Acesse a aplicação:**
+- Frontend: http://localhost
+- Backend API: http://localhost:3000
+- Swagger: http://localhost:3000/swagger
+
+### Comandos úteis
+
+```bash
+# Ver logs
+docker-compose logs -f
+
+# Parar serviços
+docker-compose down
+
+# Reconstruir imagens
+docker-compose build --no-cache
+```
+
+Para mais informações sobre Docker, consulte o arquivo [DOCKER.md](./DOCKER.md).
 
 ## ⚙️ Configuração
 
@@ -245,6 +288,29 @@ Acesse `http://localhost:3000/swagger` para ver a documentação completa da API
 - `npm run lint` - Executa o linter
 - `npm run lint:fix` - Corrige problemas do linter
 - `npm run type-check` - Verifica tipos TypeScript
+
+## 🚀 Deploy
+
+### Deploy no Vercel
+
+O Vercel é ideal para o frontend React. Para o backend Bun, recomenda-se usar Railway, Fly.io ou Render.
+
+📚 **Guia completo de deploy**: Consulte o arquivo [DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md) para instruções detalhadas.
+
+### Resumo rápido
+
+1. **Frontend no Vercel:**
+   - Conecte o repositório
+   - Configure `VITE_API_URL` apontando para o backend
+   - Deploy automático
+
+2. **Backend em Railway/Fly.io/Render:**
+   - Use Docker ou deploy direto com Bun
+   - Configure variáveis de ambiente
+   - Configure CORS para aceitar o domínio do Vercel
+
+3. **Banco de Dados:**
+   - Use serviço gerenciado (Supabase, Neon, Railway PostgreSQL)
 
 ## 🚧 Melhorias Futuras
 

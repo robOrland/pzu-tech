@@ -52,7 +52,10 @@ const app = new Elysia()
     status: "ok",
     timestamp: new Date().toISOString(),
   }))
-  .listen(env.PORT);
+  .listen({
+    port: env.PORT,
+    hostname: '0.0.0.0'
+  });
 
 console.log(
   `🦊 GovTech API is running at ${app.server?.hostname}:${app.server?.port}`
