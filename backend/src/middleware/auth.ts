@@ -14,23 +14,22 @@ export const authMiddleware = new Elysia()
   )
   .derive(async ({ jwt, headers, set }) => {
     const authHeader = headers['authorization'];
-    
+
     if (!authHeader?.startsWith('Bearer ')) {
       set.status = 401;
       throw new Error('Não autorizado: Token não fornecido');
     }
-    
+
     const token = authHeader.split(' ')[1];
     const payload = await jwt.verify(token);
-    
+
     if (!payload) {
       set.status = 401;
       throw new Error('Não autorizado: Token inválido');
     }
-    
-    return {
-      user: payload as { id: string; role: string };
-    };
+
+    const user = payload as { id: string; role: string };
+    return { user };
   });
 
 /**
