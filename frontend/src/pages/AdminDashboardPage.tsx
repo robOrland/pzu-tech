@@ -60,12 +60,21 @@ const AdminDashboardPage: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    try {
+      logout();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Painel Administrativo</h1>
-          <Button variant="outline" onClick={logout} className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
             <LogOut className="h-4 w-4" />
             Sair
           </Button>

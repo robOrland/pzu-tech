@@ -9,7 +9,11 @@ const AdminRoute: React.FC = () => {
     return <div>Carregando...</div>;
   }
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.role !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
   }
 
