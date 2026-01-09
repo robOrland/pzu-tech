@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { useToastContext } from "@/context/ToastContext";
 import api from "@/lib/api";
 
 const LoginPage = () => {
@@ -12,6 +13,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const { success, error: showError } = useToastContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,6 +26,7 @@ const LoginPage = () => {
       });
       if (response.data.success) {
         login(response.data.token, response.data.user);
+        success("Login realizado com sucesso!");
         if (response.data.user.role === 'ADMIN') {
           navigate("/admin");
         } else {
@@ -32,7 +35,7 @@ const LoginPage = () => {
       }
     } catch (error: any) {
       const message = error?.message || "Erro ao fazer login. Verifique suas credenciais.";
-      alert(message);
+      showError(message);
     } finally {
       setIsLoading(false);
     }

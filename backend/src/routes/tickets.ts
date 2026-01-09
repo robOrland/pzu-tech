@@ -27,7 +27,8 @@ const protectedTicketsRoutes = new Elysia()
       // Criar um novo chamado (Cidadão Logado)
       .post(
         "/",
-        async ({ body, set, user }) => {
+        async ({ body, set, ...context }) => {
+          const user = (context as any).user;
           const ticket = await prisma.ticket.create({
             data: {
               category: body.category,
@@ -66,7 +67,8 @@ const protectedTicketsRoutes = new Elysia()
         }
       )
       // Listar tickets do usuário logado
-      .get("/", async ({ user }) => {
+      .get("/", async (context) => {
+        const user = (context as any).user;
         const tickets = await prisma.ticket.findMany({
           where: { userId: user.id },
           orderBy: { createdAt: "desc" },

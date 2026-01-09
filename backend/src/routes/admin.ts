@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import prisma from "../db";
 import { adminMiddleware } from "../middleware/auth";
+import { logger } from "../utils/logger";
 
 export const adminRoutes = new Elysia()
   .use(adminMiddleware)
@@ -24,11 +25,27 @@ export const adminRoutes = new Elysia()
       // Atualizar status do chamado
       .patch(
         "/tickets/:id/status",
-        async ({ params, body }) => {
+        async ({ params, body, user }) => {
+          // Verificar se o ticket existe
+          const existingTicket = await prisma.ticket.findUnique({
+            where: { id: params.id },
+          });
+
+          if (!existingTicket) {
+            throw new Error("Chamado não encontrado");
+          }
+
           const ticket = await prisma.ticket.update({
             where: { id: params.id },
             data: { status: body.status },
           });
+
+          logger.info('Status do ticket atualizado', {
+            ticketId: ticket.id,
+            newStatus: ticket.status,
+            adminId: user.id,
+          });
+
           return {
             success: true,
             message: "Status atualizado com sucesso",

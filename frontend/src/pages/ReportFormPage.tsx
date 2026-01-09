@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToastContext } from "@/context/ToastContext";
 import api from "@/lib/api";
 import { ArrowLeft } from "lucide-react";
 
@@ -14,22 +15,23 @@ const ReportFormPage = () => {
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { success, error: showError, warning } = useToastContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!category || !description || !address) {
-      alert("Por favor, preencha todos os campos.");
+      warning("Por favor, preencha todos os campos.");
       return;
     }
     
     if (description.length < 10) {
-      alert("A descrição deve ter pelo menos 10 caracteres.");
+      warning("A descrição deve ter pelo menos 10 caracteres.");
       return;
     }
     
     if (address.length < 5) {
-      alert("O endereço deve ter pelo menos 5 caracteres.");
+      warning("O endereço deve ter pelo menos 5 caracteres.");
       return;
     }
     
@@ -41,12 +43,12 @@ const ReportFormPage = () => {
         address,
       });
       if (response.data.success) {
-        alert("Chamado registrado com sucesso! Protocolo: " + response.data.protocol);
-        navigate("/dashboard");
+        success(`Chamado registrado com sucesso! Protocolo: ${response.data.protocol}`);
+        setTimeout(() => navigate("/dashboard"), 1500);
       }
     } catch (error: any) {
       const message = error?.message || "Erro ao registrar chamado. Tente novamente.";
-      alert(message);
+      showError(message);
     } finally {
       setIsLoading(false);
     }

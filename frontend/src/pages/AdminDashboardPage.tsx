@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
+import { useToastContext } from '@/context/ToastContext';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -22,6 +23,7 @@ interface Ticket {
 const AdminDashboardPage: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const { logout } = useAuth();
+  const { success, error: showError } = useToastContext();
 
   const fetchTickets = async () => {
     try {
@@ -30,8 +32,7 @@ const AdminDashboardPage: React.FC = () => {
         setTickets(response.data.data);
       }
     } catch (error: any) {
-      console.error('Erro ao buscar tickets:', error);
-      alert(error?.message || 'Erro ao carregar chamados');
+      showError(error?.message || 'Erro ao carregar chamados');
     }
   };
 
@@ -46,9 +47,9 @@ const AdminDashboardPage: React.FC = () => {
       });
       // Atualiza a lista localmente para refletir a mudança
       setTickets(tickets.map(t => t.id === ticketId ? { ...t, status: newStatus as any } : t));
+      success('Status atualizado com sucesso!');
     } catch (error: any) {
-      console.error('Erro ao atualizar status:', error);
-      alert(error?.message || 'Erro ao atualizar status');
+      showError(error?.message || 'Erro ao atualizar status');
     }
   };
 
@@ -66,7 +67,7 @@ const AdminDashboardPage: React.FC = () => {
       logout();
       window.location.href = '/';
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      showError('Erro ao fazer logout');
     }
   };
 

@@ -68,9 +68,18 @@ temp/
 
 # Bun
 .bun/
+.bun-install/
 
 # TypeScript
 *.tsbuildinfo
 
+# Vercel
 .vercel
-.env*.local
+
+# Docker
+.dockerignore
+
+# Misc
+*.pem
+*.key
+*.cert

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToastContext } from "@/context/ToastContext";
 import api from "@/lib/api";
 
 const RegisterPage = () => {
@@ -11,6 +12,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { success, error: showError, warning } = useToastContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,11 +20,11 @@ const RegisterPage = () => {
     
     // Validação básica
     if (name.length < 3) {
-      alert("Nome deve ter pelo menos 3 caracteres");
+      warning("Nome deve ter pelo menos 3 caracteres");
       return;
     }
     if (password.length < 6) {
-      alert("Senha deve ter pelo menos 6 caracteres");
+      warning("Senha deve ter pelo menos 6 caracteres");
       return;
     }
     
@@ -34,12 +36,12 @@ const RegisterPage = () => {
         password,
       });
       if (response.data.success) {
-        alert("Cadastro realizado com sucesso! Faça login para continuar.");
-        navigate("/");
+        success("Cadastro realizado com sucesso! Faça login para continuar.");
+        setTimeout(() => navigate("/"), 1500);
       }
     } catch (error: any) {
       const message = error?.message || "Erro ao realizar cadastro. Tente novamente.";
-      alert(message);
+      showError(message);
     } finally {
       setIsLoading(false);
     }

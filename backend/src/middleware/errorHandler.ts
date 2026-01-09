@@ -1,24 +1,23 @@
 import { Elysia } from "elysia";
 import { env } from "../config/env";
+import { logger } from "../utils/logger";
 
 /**
  * Middleware global de tratamento de erros
  */
 export const errorHandler = new Elysia()
-  .onError(({ code, error, set }) => {
-    // Log do erro (em produção, usar um logger adequado)
-    if (env.NODE_ENV === 'development') {
-      console.error('Error:', {
+  .onError(({ code, error, set, request }) => {
+    // Log estruturado do erro
+    logger.error(
+      `Erro ${code}: ${error.message}`,
+      error instanceof Error ? error : undefined,
+      {
         code,
-        message: error.message,
-        stack: error.stack,
-      });
-    } else {
-      console.error('Error:', {
-        code,
-        message: error.message,
-      });
-    }
+        method: request.method,
+        path: request.url,
+        status: set.status,
+      }
+    );
 
     // Se o status já foi definido, usar ele
     if (set.status) {

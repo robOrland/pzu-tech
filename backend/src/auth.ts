@@ -2,6 +2,8 @@ import { Elysia, t } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import prisma from "./db";
 import { env } from "./config/env";
+import { authRateLimitMiddleware } from "./middleware/rateLimit";
+import { logger } from "./utils/logger";
 
 export const auth = new Elysia()
   .use(
@@ -12,6 +14,7 @@ export const auth = new Elysia()
   )
   .group("/auth", (app) =>
     app
+      .use(authRateLimitMiddleware)
       .post(
         "/register",
         async ({ body, set }) => {
@@ -41,13 +44,15 @@ export const auth = new Elysia()
               },
             });
 
+            logger.info('Novo usuário registrado', { userId: user.id, email: user.email });
+
             return {
               success: true,
               message: "Usuário cadastrado com sucesso",
               userId: user.id,
             };
           } catch (error) {
-            console.error(error);
+            logger.error('Erro ao registrar usuário', error instanceof Error ? error : undefined, { email: body.email });
             set.status = 500;
             return { success: false, message: "Erro ao registrar usuário" };
           }
@@ -88,6 +93,8 @@ export const auth = new Elysia()
               role: user.role,
             });
 
+            logger.info('Login realizado com sucesso', { userId: user.id, email: user.email, role: user.role });
+
             return {
               success: true,
               token,
@@ -99,7 +106,7 @@ export const auth = new Elysia()
               },
             };
           } catch (error) {
-            console.error(error);
+            logger.error('Erro ao realizar login', error instanceof Error ? error : undefined, { email: body.email });
             set.status = 500;
             return { success: false, message: "Erro ao realizar login" };
           }

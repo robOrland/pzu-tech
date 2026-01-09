@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useToastContext } from "@/context/ToastContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,7 @@ interface Ticket {
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
+  const { error: showError } = useToastContext();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -32,8 +34,7 @@ const DashboardPage = () => {
         setTickets(response.data.data);
       }
     } catch (error: any) {
-      console.error("Error fetching tickets:", error);
-      // Opcional: mostrar mensagem de erro ao usuário
+      showError(error?.message || "Erro ao carregar chamados");
     } finally {
       setIsLoading(false);
     }
